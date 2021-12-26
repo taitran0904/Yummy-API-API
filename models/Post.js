@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema(
   {
@@ -13,13 +13,13 @@ const PostSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'none',
-      enum: ['none', 'happy', 'sad', 'angry', 'surprise'],
+      default: "none",
+      enum: ["none", "happy", "sad", "angry", "surprise"],
     },
     photos: [String],
     user: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     reaction: {
@@ -27,16 +27,20 @@ const PostSchema = new mongoose.Schema(
         {
           user: {
             type: mongoose.SchemaTypes.ObjectId,
-            ref: 'User',
+            ref: "User",
             required: true,
           },
           type: {
             type: String,
-            enum: ['wow', 'love', 'haha', 'sad', 'angry'],
+            enum: ["wow", "love", "haha", "sad", "angry"],
           },
         },
       ],
     },
+    // likes: {
+    //   type: Array,
+    //   default: [],
+    // },
   },
   {
     timestamps: true,
@@ -45,15 +49,15 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
-PostSchema.pre('remove', async function () {
-  await this.model('Comment').deleteMany({ post: this._id });
+PostSchema.pre("remove", async function () {
+  await this.model("Comment").deleteMany({ post: this._id });
 });
 
-PostSchema.virtual('comments', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post',
+PostSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "post",
   justOne: false,
 });
 
-module.exports = mongoose.model('Post', PostSchema);
+module.exports = mongoose.model("Post", PostSchema);

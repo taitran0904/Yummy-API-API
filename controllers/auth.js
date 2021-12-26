@@ -49,8 +49,15 @@ exports.getInfo = handleAsync(async (req, res, next) => {
 });
 
 exports.updateInfo = handleAsync(async (req, res, next) => {
-  const avatar = req.files.avatar ? req.files.avatar[0] : null;
-  const cover_photo = req.files.cover_photo ? req.files.cover_photo[0] : null;
+  const avatar =
+    req.files !== undefined && req.files.hasOwnProperty("avatar")
+      ? req.files.avatar[0]
+      : null;
+
+  const cover_photo =
+    req.files !== undefined && req.files.hasOwnProperty("cover_photo")
+      ? req.files.cover_photo[0]
+      : null;
 
   const user = await User.findById(req.user._id);
 
@@ -84,6 +91,9 @@ exports.updateInfo = handleAsync(async (req, res, next) => {
 
 exports.updatePassword = handleAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id).select("+password");
+
+  console.log(user);
+
   const isOldPasswordMatch = await user.matchPassword(req.body.oldPassword);
   if (!isOldPasswordMatch) {
     return next(new ErrorResponse("Wrong old password", 401));

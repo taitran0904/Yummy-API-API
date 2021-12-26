@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema(
     //   type: String,
     //   default: null,
     // },
+    work: {
+      type: String,
+      default: null,
+    },
     from: {
       type: String,
       default: null,
@@ -62,6 +66,7 @@ const UserSchema = new mongoose.Schema(
     desc: {
       type: String,
       max: 50,
+      default: null,
     },
     friends: {
       type: [mongoose.SchemaTypes.ObjectId],

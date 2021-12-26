@@ -1,23 +1,23 @@
-const Comment = require('../models/Comment');
-const Post = require('../models/Post');
-const handleAsync = require('../middlewares/handleAsync');
-const ErrorResponse = require('../utils/errorResponse');
+const Comment = require("../models/Comment");
+const Post = require("../models/Post");
+const handleAsync = require("../middlewares/handleAsync");
+const ErrorResponse = require("../utils/errorResponse");
 
 exports.getCommentsOnPost = handleAsync(async (req, res, next) => {
   const comments = await Comment.find({ post: req.params.postId })
     .populate({
-      path: 'post',
-      select: '_id body',
+      path: "post",
+      select: "_id body",
     })
     .populate({
-      path: 'user',
-      select: '_id name avatar',
+      path: "user",
+      select: "_id name avatar",
     })
     .populate({
-      path: 'reaction.user',
-      select: '_id name avatar',
+      path: "reaction.user",
+      select: "_id name avatar",
     })
-    .sort('-createdAt');
+    .sort("-createdAt");
 
   res.status(200).json({
     success: true,
@@ -30,7 +30,7 @@ exports.commentPost = handleAsync(async (req, res, next) => {
   const post = await Post.findById(req.params.postId);
 
   if (!post) {
-    return next(new ErrorResponse('Post not found', 404));
+    return next(new ErrorResponse("Post not found", 404));
   }
 
   let newComment = await Comment.create({
@@ -39,12 +39,12 @@ exports.commentPost = handleAsync(async (req, res, next) => {
     user: req.user._id,
   });
 
-  newComment = await newComment
-    .populate({
-      path: 'user',
-      select: '_id name avatar',
-    })
-    .execPopulate();
+  // newComment = await newComment
+  //   .populate({
+  //     path: "user",
+  //     select: "_id name avatar",
+  //   })
+  //   .execPopulate();
 
   res.status(200).json({
     success: true,
@@ -58,23 +58,23 @@ exports.editComment = handleAsync(async (req, res, next) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return next(new ErrorResponse('Post not found', 404));
+    return next(new ErrorResponse("Post not found", 404));
   }
 
   let comment = await Comment.findById(commentId);
   if (!comment) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (`${comment.post}` !== `${postId}`) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (
     `${comment.user}` !== `${req.user._id}` &&
     `${post.user}` !== `${req.user._id}`
   ) {
-    return next(new ErrorResponse('This comment does not belong to you'));
+    return next(new ErrorResponse("This comment does not belong to you"));
   }
   comment = await Comment.findByIdAndUpdate(commentId, req.body, {
     new: true,
@@ -83,8 +83,8 @@ exports.editComment = handleAsync(async (req, res, next) => {
 
   comment = await comment
     .populate({
-      path: 'user',
-      select: '_id name avatar',
+      path: "user",
+      select: "_id name avatar",
     })
     .execPopulate();
 
@@ -100,24 +100,24 @@ exports.deleteComment = handleAsync(async (req, res, next) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return next(new ErrorResponse('Post not found', 404));
+    return next(new ErrorResponse("Post not found", 404));
   }
 
   let comment = await Comment.findById(commentId);
 
   if (!comment) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (`${comment.post}` !== `${postId}`) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (
     `${comment.user}` !== `${req.user._id}` &&
     `${post.user}` !== `${req.user._id}`
   ) {
-    return next(new ErrorResponse('This comment does not belong to you'));
+    return next(new ErrorResponse("This comment does not belong to you"));
   }
 
   await comment.remove();
@@ -134,17 +134,17 @@ exports.reactToComment = handleAsync(async (req, res, next) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return next(new ErrorResponse('Post not found', 404));
+    return next(new ErrorResponse("Post not found", 404));
   }
 
   let comment = await Comment.findById(commentId);
 
   if (!comment) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (`${comment.post}` !== `${postId}`) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   const isReacted = comment.reaction.findIndex(
@@ -181,24 +181,24 @@ exports.getCommentReaction = handleAsync(async (req, res, next) => {
   const post = await Post.findById(postId);
 
   if (!post) {
-    return next(new ErrorResponse('Post not found', 404));
+    return next(new ErrorResponse("Post not found", 404));
   }
 
   let comment = await Comment.findById(commentId);
 
   if (!comment) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   if (`${comment.post}` !== `${postId}`) {
-    return next(new ErrorResponse('Comment not found', 404));
+    return next(new ErrorResponse("Comment not found", 404));
   }
 
   const commentReaction = await Comment.findById(commentId)
-    .select('reaction')
+    .select("reaction")
     .populate({
-      path: 'reaction.user',
-      select: '_id name profilePic',
+      path: "reaction.user",
+      select: "_id name profilePic",
     });
 
   res.status(200).json({
